@@ -58,6 +58,9 @@ unassigned variable left
 
 '''
 
+from collections import deque
+
+
 def prop_BT(csp, newVar=None):
     '''
     Do plain backtracking propagation. That is, do no propagation at all. Just 
@@ -75,9 +78,25 @@ def prop_BT(csp, newVar=None):
                 return False, []
     return True, []
 
+
 def prop_FC(csp, newVar=None):
-    # TODO! IMPLEMENT THIS!
-    pass
+    if not newVar:
+        cons = csp.get_all_cons()
+    else:
+        cons = csp.get_cons_with_var(newVar)
+
+    pruned = []
+    for c in cons:
+        if c.get_n_unasgn() == 1:
+            var = c.get_unasgn_vars()[0]
+            for val in var.cur_domain():
+                if not c.has_support(var, val):
+                    var.prune_value(val)
+                    pruned.append((var, val))
+            if var.cur_domain_size() == 0:
+                return False, pruned
+    return True, pruned
+
 
 def prop_GAC(csp, newVar=None):
     '''
@@ -85,5 +104,27 @@ def prop_GAC(csp, newVar=None):
     all constraints. Otherwise we do GAC enforce with constraints containing 
     newVar on GAC Queue.
     '''
-    # TODO! IMPLEMENT THIS!
-    pass
+    if not newVar:
+        cons = csp.get_all_cons()
+    else:
+        cons = csp.get_cons_with_var(newVar)
+
+    pruned = []
+    gac_queue = deque(cons)
+    while gac_queue:
+        c = gac_queue.popleft()
+        for var in c.get_scope():
+            var_pruned = []
+            for val in var.cur_domain():
+                if not c.has_support(var, val):
+                    var.prune_value(val)
+                    var_pruned.append((var, val))
+            pruned.extend(var_pruned)
+            if var.cur_domain_size() == 0:
+                return False, pruned
+            if var_pruned:
+                for c_ in csp.get_cons_with_var(var):
+                    if c_ not in gac_queue:
+                        gac_queue.append(c_)
+
+    return True, pruned

@@ -1,2 +1,4 @@
 /csc384w18_a2.pdf
 /.idea
+/.pytest_cache
+/__pycache__

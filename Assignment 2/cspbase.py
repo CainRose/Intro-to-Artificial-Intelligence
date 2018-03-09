@@ -44,7 +44,8 @@ Constraint Satisfaction Routines and Objects
 import time
 import functools
 
-class Variable: 
+
+class Variable:
     '''
     Class for defining CSP variables.  On initialization the
     variable object should be given a name, and optionally a list of
@@ -88,27 +89,27 @@ class Variable:
         Create a variable object, specifying its name (a string). Optionally 
         specify the initial domain.
         '''
-        self.name          = name                 # Text name for variable
-        self.dom           = list(domain)         # Make a copy of passed domain
-        self.curdom        = [True] * len(domain) # Using list
-        self.assignedValue = None                 # For bt_search
+        self.name = name  # Text name for variable
+        self.dom = list(domain)  # Make a copy of passed domain
+        self.curdom = [True] * len(domain)  # Using list
+        self.assignedValue = None  # For bt_search
 
     def add_domain_values(self, values):
         '''
         Add additional domain values to the domain Removals not supported 
         removals.
         '''
-        for val in values: 
+        for val in values:
             self.dom.append(val)
             self.curdom.append(True)
 
     def domain_size(self):
         '''Return the size of the (permanent) domain'''
-        return(len(self.dom))
+        return (len(self.dom))
 
     def domain(self):
         '''Return the variable's (permanent) domain'''
-        return(list(self.dom))
+        return (list(self.dom))
 
     # Methods for current domain (pruning and unpruning)
     def prune_value(self, value):
@@ -152,17 +153,17 @@ class Variable:
         if self.is_assigned():
             return 1
         else:
-            return(sum(1 for v in self.curdom if v))
+            return (sum(1 for v in self.curdom if v))
 
     def restore_curdom(self):
         '''Return all values back into CURRENT domain'''
         for i in range(len(self.curdom)):
             self.curdom[i] = True
 
-    #methods for assigning and unassigning
+    # methods for assigning and unassigning
     def is_assigned(self):
         return self.assignedValue != None
-    
+
     def assign(self, value):
         '''
         Used by bt_search. When we assign we remove all other values from 
@@ -170,7 +171,7 @@ class Variable:
         unassign.
         '''
         if self.is_assigned() or not self.in_cur_domain(value):
-            print("ERROR: trying to assign variable", self, 
+            print("ERROR: trying to assign variable", self,
                   "that is already assigned or illegal value (not in curdom)")
             return
         self.assignedValue = value
@@ -178,7 +179,8 @@ class Variable:
     def unassign(self):
         '''Used by bt_search. Unassign and restore old curdom'''
         if not self.is_assigned():
-            print("ERROR: trying to unassign variable", self, " not yet assigned")
+            print("ERROR: trying to unassign variable", self,
+                  " not yet assigned")
             return
         self.assignedValue = None
 
@@ -186,7 +188,7 @@ class Variable:
         '''return assigned value...returns None if is unassigned'''
         return self.assignedValue
 
-    #internal methods
+    # internal methods
     def value_index(self, value):
         '''
         Domain values need not be numbers, so return the index in the domain 
@@ -195,17 +197,19 @@ class Variable:
         return self.dom.index(value)
 
     def __repr__(self):
-        return("Var-{}".format(self.name))
+        return ("Var-{}".format(self.name))
 
     def __str__(self):
-        return("Var--{}".format(self.name))
+        return ("Var--{}".format(self.name))
 
     def print_all(self):
         '''Also print the variable domain and current domain'''
-        print("Var--\"{}\": Dom = {}, CurDom = {}".format(self.name, 
-                                                             self.dom, 
-                                                             self.curdom))
-class Constraint: 
+        print("Var--\"{}\": Dom = {}, CurDom = {}".format(self.name,
+                                                          self.dom,
+                                                          self.curdom))
+
+
+class Constraint:
     '''
     Class for defining constraints variable objects specifes an ordering over 
     variables.  This ordering is used when calling the satisfied function which 
@@ -213,7 +217,7 @@ class Constraint:
     the constraint
     '''
 
-    def __init__(self, name, scope): 
+    def __init__(self, name, scope):
         '''
         Create a constraint object, specify the constraint name (a string) and 
         its scope (an ORDERED list of variable objects). The order of the 
@@ -243,16 +247,16 @@ class Constraint:
         tuples.
         '''
         for x in tuples:
-            t = tuple(x)  #ensure we have an immutable tuple
+            t = tuple(x)  # ensure we have an immutable tuple
             if not t in self.sat_tuples:
                 self.sat_tuples[t] = True
 
-            #now put t in as a support for all of the variable values in it
+            # now put t in as a support for all of the variable values in it
             for i, val in enumerate(t):
                 var = self.scope[i]
-                if not (var,val) in self.sup_tuples:
-                    self.sup_tuples[(var,val)] = []
-                self.sup_tuples[(var,val)].append(t)
+                if not (var, val) in self.sup_tuples:
+                    self.sup_tuples[(var, val)] = []
+                self.sup_tuples[(var, val)].append(t)
 
     def get_scope(self):
         '''Get the list of variables that the constraint is over'''
@@ -278,7 +282,7 @@ class Constraint:
                 n = n + 1
         return n
 
-    def get_unasgn_vars(self): 
+    def get_unasgn_vars(self):
         '''
         Return list of unassigned variables in constraint's scope. 
         NOTE: more expensive to get the list than to then number.
@@ -312,7 +316,8 @@ class Constraint:
         return True
 
     def __str__(self):
-        return("{}({})".format(self.name,[var.name for var in self.scope]))
+        return ("{}({})".format(self.name, [var.name for var in self.scope]))
+
 
 class CSP:
     '''
@@ -333,7 +338,7 @@ class CSP:
         for v in vars:
             self.add_var(v)
 
-    def add_var(self,v):
+    def add_var(self, v):
         '''
         Add variable object to CSP while setting up an index to obtain the 
         constraints over this variable.
@@ -341,12 +346,13 @@ class CSP:
         if not type(v) is Variable:
             print("WARNING: Trying to add non variable ", v, " to CSP object")
         elif v in self.vars_to_cons:
-            print("WARNING: Trying to add variable ", v, " to CSP object that already has it")
+            print("WARNING: Trying to add variable ", v,
+                  " to CSP object that already has it")
         else:
             self.vars.append(v)
             self.vars_to_cons[v] = []
 
-    def add_constraint(self,c):
+    def add_constraint(self, c):
         '''
         Add constraint to CSP. Note that all variables in the constraints scope 
         must already have been added to the CSP.
@@ -356,7 +362,8 @@ class CSP:
         else:
             for v in c.scope:
                 if not v in self.vars_to_cons:
-                    print("WARNING: Trying to add constraint ", c, " with unknown variables to CSP object")
+                    print("WARNING: Trying to add constraint ", c,
+                          " with unknown variables to CSP object")
                     return
                 self.vars_to_cons[v].append(c)
             self.cons.append(c)
@@ -366,7 +373,7 @@ class CSP:
         Return list of all constraints in the CSP.
         '''
         return self.cons
-        
+
     def get_cons_with_var(self, var):
         '''
         Return list of constraints that include var in their scope.
@@ -390,12 +397,12 @@ class CSP:
         print("   Variables = ", self.vars)
         print("   Constraints = ", self.cons)
 
-
     def print_soln(self):
         print("CSP", self.name, " Assignments = ")
         for v in self.vars:
             print(v, " = ", v.get_assigned_value(), "    ", end='')
         print("")
+
 
 ########################################################
 # Backtracking Routine                                 #
@@ -411,13 +418,13 @@ class BT:
 
     def __init__(self, csp):
         '''csp is CSP object specifying the CSP to be solved'''
-        self.csp         = csp
-        self.nDecisions  = 0 #nDecisions is the number of variable 
-                            #assignments made during search
-        self.nPrunings   = 0 #nPrunings is the number of value prunings during search
-        self.unasgn_vars = [] #used to track unassigned variables
-        self.LOG_LEVEL   = 1
-        self.runtime     = 0
+        self.csp = csp
+        self.nDecisions = 0  # nDecisions is the number of variable
+        # assignments made during search
+        self.nPrunings = 0  # nPrunings is the number of value prunings during search
+        self.unasgn_vars = []  # used to track unassigned variables
+        self.LOG_LEVEL = 1
+        self.runtime = 0
 
     def trace_on(self):
         '''Turn search trace on'''
@@ -429,7 +436,7 @@ class BT:
 
     def quiet(self):
         self.LOG_LEVEL = 0
-        
+
     def clear_stats(self):
         '''Initialize counters'''
         self.nDecisions = 0
@@ -437,10 +444,11 @@ class BT:
         self.runtime = 0
 
     def print_stats(self):
-        print("Search made {} variable assignments and pruned {} variable values".format(
-            self.nDecisions, self.nPrunings))
+        print(
+            "Search made {} variable assignments and pruned {} variable values".format(
+                self.nDecisions, self.nPrunings))
 
-    def restoreValues(self,prunings):
+    def restoreValues(self, prunings):
         '''
         Restore list of values to variable domains each item in prunings is a 
         pair (var, val).
@@ -458,8 +466,8 @@ class BT:
     def restoreUnasgnVar(self, var):
         '''Add variable back to list of unassigned vars'''
         self.unasgn_vars.append(var)
-        
-    def bt_search(self,propagator,var_ord=None,val_ord=None):
+
+    def bt_search(self, propagator, var_ord=None, val_ord=None):
         '''Try to solve the CSP using specified propagator routine
 
            propagator == a function with the following template
@@ -499,24 +507,27 @@ class BT:
         stime = time.process_time()
 
         self.restore_all_variable_domains()
-        
+
         self.unasgn_vars = []
         for v in self.csp.vars:
             if not v.is_assigned():
                 self.unasgn_vars.append(v)
 
-        status, prunings = propagator(self.csp) #initial propagate no assigned variables.
+        status, prunings = propagator(
+            self.csp)  # initial propagate no assigned variables.
         self.nPrunings = self.nPrunings + len(prunings)
 
         if self.LOG_LEVEL > 1:
-            print(len(self.unasgn_vars), " unassigned variables at start of search")
+            print(len(self.unasgn_vars),
+                  " unassigned variables at start of search")
             print("Root Prunings: ", prunings)
 
         if status == False:
             print("CSP{} detected contradiction at root".format(
                 self.csp.name))
         else:
-            status = self.bt_recurse(propagator, var_ord, val_ord, 1)   #now do recursive search
+            status = self.bt_recurse(propagator, var_ord, val_ord,
+                                     1)  # now do recursive search
 
         self.restoreValues(prunings)
 
@@ -525,7 +536,7 @@ class BT:
                 print("CSP{} unsolved. Has no solutions".format(self.csp.name))
             if status == True:
                 print("CSP {} solved. CPU Time used = {}".format(self.csp.name,
-                                                                time.process_time() - stime))
+                                                                 time.process_time() - stime))
                 self.csp.print_soln()
 
             print("bt_search finished")
@@ -537,26 +548,26 @@ class BT:
 
         if self.LOG_LEVEL > 1:
             print('  ' * level, "bt_recurse level ", level)
-           
+
         if not self.unasgn_vars:
-            #all variables assigned
+            # all variables assigned
             return True
         else:
             ##Figure out which variable to assign,
             ##Then remove it from the list of unassigned vars
             if var_ord:
-              var = var_ord(self.csp)
+                var = var_ord(self.csp)
             else:
-              var = self.unasgn_vars[0]
-            self.unasgn_vars.remove(var) 
+                var = self.unasgn_vars[0]
+            self.unasgn_vars.remove(var)
 
             if self.LOG_LEVEL > 1:
                 print('  ' * level, "bt_recurse var = ", var)
 
             if val_ord:
-              value_order = val_ord(self.csp,var)
+                value_order = val_ord(self.csp, var)
             else:
-              value_order = var.cur_domain()
+                value_order = var.cur_domain()
 
             for val in value_order:
 
@@ -564,7 +575,7 @@ class BT:
                     print('  ' * level, "bt_recurse trying", var, "=", val)
 
                 var.assign(val)
-                self.nDecisions = self.nDecisions+1
+                self.nDecisions = self.nDecisions + 1
 
                 status, prunings = propagator(self.csp, var)
                 self.nPrunings = self.nPrunings + len(prunings)
@@ -574,7 +585,7 @@ class BT:
                     print('  ' * level, "bt_recurse prop pruned = ", prunings)
 
                 if status:
-                    if self.bt_recurse(propagator, var_ord,val_ord, level+1):
+                    if self.bt_recurse(propagator, var_ord, val_ord, level + 1):
                         return True
 
                 if self.LOG_LEVEL > 1:
@@ -584,4 +595,3 @@ class BT:
 
             self.restoreUnasgnVar(var)
             return False
-

@@ -20,15 +20,37 @@ be accessed via methods.
 
 import random
 from copy import deepcopy
+from propagators import prop_FC
 
 def ord_dh(csp):
-    # TODO! IMPLEMENT THIS!
-    pass
+    var_dh, max_dh = None, 0
+    for var in csp.get_all_unasgn_vars():
+        cons = csp.get_cons_with_var(var)
+        cur_val = sum([len(c.get_scope()) - 1 for c in cons]) - len(cons)
+        if cur_val > max_dh:
+            max_dh = cur_val
+            var_dh = var
+    return var_dh
+
 
 def ord_mrv(csp):
-    # TODO! IMPLEMENT THIS!
-    pass
+    var_mrv, min_mrv = None, 9999999
+    for var in csp.get_all_unasgn_vars():
+        dom_size = var.cur_domain_size()
+        if dom_size < min_mrv:
+            min_mrv = dom_size
+            var_mrv = var
+    return var_mrv
 
 def val_lcv(csp, var):
-    # TODO! IMPLEMENT THIS!
-    pass
+    val_lcv = []
+    for val in var.cur_domain():
+        var.assign(val)
+        status, pruned = prop_FC(var)
+        var.unassign()
+        for var_p, val_p in pruned:
+            var_p.unprune_value(val_p)
+        if status:
+            val_lcv.append((val, len(pruned)))
+    val_lcv.sort(key=lambda v: v[1])
+    return [v[0] for v in val_lcv]
