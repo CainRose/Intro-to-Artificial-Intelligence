@@ -1,0 +1,79 @@
+1. a)
+As Pacman can only move vertically and horizontally along the board and
+two of these movements are blocked when it is a corner, the branching 
+factor is two. This is assuming, of course, that the board has a 
+sufficiently large N to ensure that the corners do not overlap.
+
+1. b)
+By the same logic as above, since Pacman has no blocking walls the 
+branching factor will be four.
+
+1. c)
+If we assume that there is no path or cycle checking, then the
+depth of the search space is infinite since nodes can be explored any
+number of times. On the other extreme, if we assume BFS with cycle 
+checking then the maximum depth of search is equal to the farthest 
+possible manhattan distance between two nodes since the search expands 
+radially along valid moves from one position to another. In the case of
+an open board, this is jsut the manhattan distance between the two 
+corners, 2N.
+
+2. a)
+Since we are using a monotone heuristic, A* will not explore any path 
+that has a cost greater than ctotal. As the minimum cost for an action 
+is cmin, the greates depth that the search could reach will thus be
+equal to floor(ctotal/cmin), the size of the largest possible
+explored path. 
+
+As mentioned in question 1. b), the largest possible 
+branching factor is four. Therefore, in the worst case where every path
+is as large as the largest path (i.e. devolves into a UCS), the size of
+the search tree at some point is 4m, where m is the length of the 
+deepest path. Note that since we assume that the search has neither 
+path nor cycle checking, this ignores the possibility of repeated 
+states.
+
+Combining the two above produces the desired solution. In the worst 
+case, the search will have expanded all the nodes of the same depth as 
+(or less than) the optimal solution. Thus the worst-case depth of the
+tree is floor(ctotal/cmin) + 1, where +1 denotes this additional layer,
+and thus the maximum number of paths on the OPEN list when the solution
+is found is n = 4^(floor(ctotal/cmin) + 1).
+
+2. b)
+If we need to add a new node to OPEN but OPEN already contains n nodes,
+the bahaviour is undefined. It is thus assumed that we are only 
+guarenteed to find a solution whose ctotal dictates a maximum number of
+paths in OPEN that is less than or equal to n (as per 2. a)). Hence, we
+just solve the derived equation from 2. a) for ctotal, obtaining:
+4^(floor(ctotal/cmin) + 1) <= n
+floor(ctotal/cmin) + 1 <= log(n)/log(4)
+ctotal <= cmin * (log(n)/log(4) - 1)
+
+3. a)
+Yes
+
+3. b)
+No, with a ration of 3.
+
+3. c)
+Yes
+
+4. a)
+Suppose you had a maze in which you had a lot of possible paths but 
+only a single optimal path; specifically, a lot of near optimal paths 
+whcih are fundamentally distinct from the one true optimal path. The 
+search may then spend a lot of time exploring these near-optimal paths. 
+Choosing h1 may then, depending on the contruction of h1, result in 
+far less states being expanded as the search is more accurately able to 
+identify the optimal path. This reduction in number of expanded states 
+and accompanying reduction in the number of heuristic calls may 
+actually make using h1 faster than using h2 in this maze.
+
+4. b)
+Suppose you had a maze with a lot of different possible optimal
+solutions and the goal is to find any one of them. In this case, h1
+is no better than h2 at being able to prioritize one optimal path over 
+another, hence both will probably result in most of the optimal 
+solutions being explored. As a result, h2, being faster than h1, will
+probably be the better choice in heuristic.
