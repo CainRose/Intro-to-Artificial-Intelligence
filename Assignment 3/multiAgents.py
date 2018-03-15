@@ -19,6 +19,8 @@ import random, util
 from collections import deque
 
 from game import Agent
+import searchAgents
+import search
 
 INF = 999999
 
@@ -264,7 +266,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         for action in gameState.getLegalActions(0):
             state = gameState.generateSuccessor(0, action)
             newVal = self.expectimax(state, 1, searchDepth - 1)
-            if newVal > bestVal or (newVal == bestVal and bestAction == 'Stop'):
+            if newVal > bestVal:
                 bestVal = newVal
                 bestAction = action
         return bestAction
@@ -299,13 +301,11 @@ def betterEvaluationFunction(currentGameState):
       Current Score: The only way that changes in state as a result of actions
       can be accounted for, e.g. eating a ghost, eating food
 
-      Food Distance: The inverse distance to the nearest food.
+      Food Distance: The inverse distance to the nearest food, found using bfs.
       If there is food nearby, we should go for it.
 
-      Enemy Distance: The inverse distance to each enemy to stay away from
-      enemies. Note that normally we cutoff if the enemy is far away since we
-      don't really care what it does then. If the ghost is scared however, we
-      want to go towards it.
+      Enemy Distance: The inverse distance to each enemy. Only non-zero if the
+      ghost is scared, to prioritize going for it.
     """
 
     pacman_pos = currentGameState.getPacmanPosition()
@@ -313,23 +313,21 @@ def betterEvaluationFunction(currentGameState):
     ghost_states = currentGameState.getGhostStates()
     scared_times = [g.scaredTimer for g in ghost_states]
 
-    food_score = currentGameState.getNumFood()
-    food_distance = [manhattanDistance(pacman_pos, (i, j))
-                     for i, row in enumerate(food)
-                     for j, f in enumerate(row) if f]
-    food_distance = min(food_distance) if food_distance else 0
-    food_distance = 1 / food_distance if food_distance else 0
+    anyfood = searchAgents.AnyFoodSearchProblem(currentGameState)
+    food_distance = search.bfs(anyfood)
+    food_distance = 1 / len(food_distance) if food_distance else 0
+
     enemy_dist = [manhattanDistance(pacman_pos, g.configuration.pos)
                   for g in ghost_states]
     for i, d in enumerate(enemy_dist):
         d = d if d != 0 else 0.00001
         d = 1 / d if d < 5 or scared_times[i] != 0 else 0
-        d = d if scared_times[i] == 0 else -d
+        d = 0 if scared_times[i] == 0 else -d
         enemy_dist[i] = d
     enemy_dist = sum(enemy_dist)
 
     score = currentGameState.getScore()
-    return score + food_distance - enemy_dist
+    return score + 0.1*food_distance - enemy_dist
 
 
 # Abbreviation
