@@ -23,11 +23,11 @@ from copy import deepcopy
 from propagators import prop_FC
 
 def ord_dh(csp):
-    var_dh, max_dh = None, 0
+    var_dh, max_dh = None, -9999999
     for var in csp.get_all_unasgn_vars():
         cons = csp.get_cons_with_var(var)
         cur_val = sum([len(c.get_scope()) - 1 for c in cons]) - len(cons)
-        if cur_val > max_dh:
+        if cur_val >= max_dh:
             max_dh = cur_val
             var_dh = var
     return var_dh
@@ -46,7 +46,7 @@ def val_lcv(csp, var):
     val_lcv = []
     for val in var.cur_domain():
         var.assign(val)
-        status, pruned = prop_FC(var)
+        status, pruned = prop_FC(csp, var)
         var.unassign()
         for var_p, val_p in pruned:
             var_p.unprune_value(val_p)

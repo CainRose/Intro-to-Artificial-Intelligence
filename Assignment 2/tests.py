@@ -186,11 +186,11 @@ TEST_MODELS = True
 TEST_HEURISTICS = True
 TEST_PROPAGATORS = True
 CUSTOM_TIMING_TESTS = False
-CUSTOM_LARGE_TESTS = True
+CUSTOM_LARGE_TESTS = False
 
 
 class TestStringMethods(unittest.TestCase):
-    def helper_prop(self, board, prop=prop_FC, var_ord=ord_mrv):
+    def helper_prop(self, board, prop=prop_FC, var_ord=ord_dh):
         csp, var_array = kenken_csp_model(board)
         solver = BT(csp)
         solver.quiet()
@@ -321,120 +321,6 @@ class TestStringMethods(unittest.TestCase):
 
         self.assertFalse(pruned[0],
                          "Failed a FC test: should have resulted in a DWO")
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_fc_time0(self):
-        board = BOARDS[0]
-        start_time = time.clock()
-        self.helper_prop(board, prop_FC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_fc_time1(self):
-        board = BOARDS[1]
-        start_time = time.clock()
-        self.helper_prop(board, prop_FC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_fc_time2(self):
-        board = BOARDS[2]
-        start_time = time.clock()
-        self.helper_prop(board, prop_FC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    # @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_fc_time3(self):
-        board = BOARDS[3]
-        start_time = time.clock()
-        self.helper_prop(board, prop_FC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_fc_time4(self):
-        board = BOARDS[4]
-        start_time = time.clock()
-        self.helper_prop(board, prop_FC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_fc_time5(self):
-        board = BOARDS[5]
-        start_time = time.clock()
-        self.helper_prop(board, prop_FC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_gac_time0(self):
-        board = BOARDS[0]
-        start_time = time.clock()
-        self.helper_prop(board, prop_GAC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_gac_time1(self):
-        board = BOARDS[1]
-        start_time = time.clock()
-        self.helper_prop(board, prop_GAC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_gac_time2(self):
-        board = BOARDS[2]
-        start_time = time.clock()
-        self.helper_prop(board, prop_GAC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_gac_time3(self):
-        board = BOARDS[3]
-        start_time = time.clock()
-        self.helper_prop(board, prop_GAC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_gac_time4(self):
-        board = BOARDS[4]
-        start_time = time.clock()
-        self.helper_prop(board, prop_GAC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_TIMING_TESTS, 'Not Performing Timing Tests')
-    def test_gac_time5(self):
-        board = BOARDS[5]
-        start_time = time.clock()
-        self.helper_prop(board, prop_GAC)
-        end_time = time.clock()
-        self.assertLess(end_time - start_time, 60,
-                        'Failed Timing Test: FC function too slow.')
-
-    @unittest.skipUnless(CUSTOM_LARGE_TESTS,
-                         "Not Large Models.")
-    def test_large(self):
-        board = CUSTOM_BOARDS[0]
-        self.helper_prop(board, prop_GAC)
     
 
 if __name__ == '__main__':
